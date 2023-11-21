@@ -24,6 +24,8 @@ data/*
 storage/*
 .project
 .pydevproject
+.ropeproject
 .idea
 *.db
 .~*
+wheelhouse/
