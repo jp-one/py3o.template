@@ -13,6 +13,8 @@ Contents:
 
    pythoncode.rst
    templating.rst
+   hacking.rst
+   autodoc.rst
 
 
 
