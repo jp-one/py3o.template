@@ -1,0 +1,12 @@
+version: '2'
+services:
+  dev:
+    image: "ubuntu:18.04"
+    #container_name: "dev"
+    build:
+      context: "ubuntu"
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/opt/dev:cached
+    tty: true
+    command: bash
