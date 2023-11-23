@@ -20,11 +20,11 @@ jobs:
         pip install --upgrade pip setuptools wheel
     - name: build wheel
       run: |
-        python setup.py bdist_wheel -d asset
+        python setup.py bdist_wheel
     # bdist_wheel asset_name: ${{ steps.bdist_wheel.outputs.asset_name }}
     - id: bdist_wheel
       run: |
-        cd asset
+        cd dist
         echo -n "asset_name=" >> $GITHUB_OUTPUT
         ls >> $GITHUB_OUTPUT
     # Settings > Actions > General > Workflow permissions: Read and write permissions
@@ -45,6 +45,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: asset/${{ steps.bdist_wheel.outputs.asset_name }}
+        asset_path: dist/${{ steps.bdist_wheel.outputs.asset_name }}
         asset_name: ${{ steps.bdist_wheel.outputs.asset_name }}
         asset_content_type: application/octet-stream

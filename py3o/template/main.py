@@ -49,6 +49,11 @@ REGEXP_URI = "http://exslt.org/regular-expressions"
 PY3O_URI = "http://py3o.org/"
 MANIFEST = "META-INF/manifest.xml"
 
+# Images are stored in the "Pictures" directory.
+# Saving images in a sub-directory would be cleaner but doesn't seem to be
+# supported...
+PICTURES_DIR = "Pictures/"
+
 
 class TemplateException(ValueError):
     """some client code is used to catching ValueErrors, let's keep the old
@@ -562,7 +567,7 @@ class ImageInjector(object):
         if isb64:
             # we need to decode the base64 data to obtain the raw data version
             data = b64decode(data)
-        identifier = "Pictures/" + hashlib.sha256(data).hexdigest()
+        identifier = PICTURES_DIR + hashlib.sha256(data).hexdigest()
         self.template.set_image_data(identifier, data, mime_type=mime_type)
 
         attrs = {
@@ -1231,16 +1236,17 @@ class Template(object):
             ):
                 # Find the identifier of the image
                 # (py3o.staticimage[identifier]).
-                image_id = draw_frame.attrib[
+                identifier = draw_frame.attrib[
                     "{%s}name" % self.namespaces["draw"]
                 ][5:]
+                image_id = PICTURES_DIR + identifier
                 if image_id not in self.images:
                     if not self.ignore_undefined_variables:
                         raise TemplateException(
                             "Can't find data for the image named 'py3o.%s'; "
                             "make sure it has been added with the "
                             "set_image_path or set_image_data methods."
-                            % image_id
+                            % identifier
                         )
 
                 # Replace the xlink:href attribute of the image to point to
@@ -1394,7 +1400,8 @@ class Template(object):
         """Set data for an image mentioned in the template.
 
         @param identifier: Identifier of the image; refer to the image in the
-        template by setting "py3o.[identifier]" as the name of that image.
+        template by setting "py3o.staticimage.[identifier]" as the name
+        of that image.
         @type identifier: string
 
         @param path: Image path on the file system
@@ -1402,15 +1409,14 @@ class Template(object):
         """
 
         f = open(path, "rb")
-        self.set_image_data(identifier, f.read())
+        image_id = PICTURES_DIR + identifier
+        self.set_image_data(image_id, f.read())
         f.close()
 
     def set_image_data(self, identifier, data, mime_type=None):
         """Set data for an image mentioned in the template.
 
-        @param identifier: Identifier of the image; refer to the image in the
-        template by setting "py3o.staticimage.[identifier]" as the name
-        of that image.
+        @param identifier: Identifier of the image; starts with "Pictures/".
         @type identifier: string
 
         @param data: Contents of the image.
